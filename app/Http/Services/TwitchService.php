@@ -4,15 +4,16 @@ namespace App\Http\Services;
 
 use App\Http\Interfaces\ContractProvider;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\{JsonResponse, Response};
+use Illuminate\Http\Request;
 
 class TwitchService implements ContractProvider
 {
-   /*
+
+   /** 
     * @param  Request  $request
-    * @return Response
+    * @return array
     */
-    public function auth($request): array
+    public function auth(Request $request): array
     {   
         $login_url = 'https://id.twitch.tv/oauth2/authorize';
         $redirect_uri = 'http://localhost:3000/auth/twitch';
@@ -37,6 +38,10 @@ class TwitchService implements ContractProvider
         return $this->getToken($request->query('code'), $client_id, $redirect_uri);  
     }
 
+    /**
+     * @param string $access_token
+     * @return array
+     */
     public function getUser(string $access_token): array
     {
         return Http::withHeaders($this->getHeader($access_token))
@@ -44,6 +49,12 @@ class TwitchService implements ContractProvider
         ->json();
     }
 
+    /**
+     * @param string $code
+     * @param string $client_id
+     * @param string $redirect_uri
+     * @return array
+     */
     private function getToken(string $code, string $client_id, string $redirect_uri): array
     {
         $token_base = 'https://id.twitch.tv/oauth2/token';
@@ -58,6 +69,10 @@ class TwitchService implements ContractProvider
         ])->json();
     }
 
+    /**
+     * @param string $access_token
+     * @return array
+     */
     private function getHeader(string $access_token): array
     {
         return [

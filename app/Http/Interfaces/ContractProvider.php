@@ -2,8 +2,11 @@
 
 namespace App\Http\Interfaces;
 
-interface ContractProvider {
-    public function auth($request): array;
+use Illuminate\Http\Request;
 
+interface ContractProvider {
+
+    public function auth(Request $request): array;
     public function getUser(string $token): array;
+    
 }

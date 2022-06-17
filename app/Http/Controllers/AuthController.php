@@ -7,23 +7,21 @@ use App\Http\Repository\AuthRepository;
 
 class AuthController extends Controller
 {
-    private $repository;
 
-    public function __construct(AuthRepository $repository)
+    public function __construct(private AuthRepository $repository)
     {
-        $this->repository = $repository;
     }
-   /*
-    * @param  Request  $request
-    * @return Response
+    
+   /**
+    * @param Request $request
+    * @param string $provider
+    * @return void
     */
     public function auth(Request $request, string $provider)
     {   
         $result = $this->repository->getOAuth($request, $provider);
         if($result)
-            return redirect()->route('index');
-
-        
+            return redirect()->route('index');        
     }
 
 }

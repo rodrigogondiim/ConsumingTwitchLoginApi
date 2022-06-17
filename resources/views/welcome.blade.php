@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('css/app.css')}}"/>
     <title>HoMM</title>
 </head>
 <body>
-    <a href=" @if(isset(auth()->user()->name)) # @else {{ route('login', ['provider' => 'twitch'])}} @endif" style='text-decoration:none;background:#9146FF;width:auto;display:flex;align-items:center;justify-content:center'>
-        <img src="{{asset('img/img.png')}}" style='width:auto;height:30px' alt="">
-        <p style='color:#fff;font-weight:bold;font-family:Calibri'>
-        @if(isset(auth()->user()->name))
-            Welcome {{auth()->user()->name}}
-            <a href="{{route('logout')}}">Logout</a>
-        @else
-            Log-in with Twitch
+    <div class="logins">
+        <a class="log_twitch" href="{{ Auth::check() ? '#' : route('login', ['provider' => 'twitch']) }}">
+            <img src="{{ Auth::check() ? auth()->user()->picture : asset('img/img.png') }}">
+            <p>{{ Auth::check() ? 'Welcome ' . auth()->user()->name : 'Log-in with Twitch' }}</p>    
+        </a>
+        @if(Auth::check())
+        <a href="{{ route('logout') }}" class="logout">X</a>
         @endif
-        </p>
-    </a>
+    </div>
+
 </body>
 </html>

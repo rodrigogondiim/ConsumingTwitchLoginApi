@@ -18,6 +18,5 @@ use App\Http\Controllers\HomeController;
 Route::controller(HomeController::class)->group(function(){
     Route::get('/', 'index')->name('index');
     Route::get('/logout', 'logout')->name('logout');
-
 });
 Route::get('/auth/{provider}', [AuthController::class, 'auth'])->name('login');
