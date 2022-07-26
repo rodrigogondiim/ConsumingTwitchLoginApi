@@ -9,36 +9,48 @@ use Illuminate\Http\Request;
 class TwitchService implements ContractProvider
 {
 
-   /** 
-    * @param  Request  $request
+    protected ?string $uri_login;
+    protected ?string $uri_redirect;
+    protected ?string $client;
+
+   /**
+    * @param Request $request
     * @return array
     */
     public function auth(Request $request): array
-    {   
-        $login_url = 'https://id.twitch.tv/oauth2/authorize';
-        $redirect_uri = 'http://localhost:3000/auth/twitch';
-        $claims = '{"id_token":{"email":null,"email_verified":null},"userinfo":{"email":null,"email_verified":null,"preferred_username":null,"picture":null,"updated_at":null}}';
-        $client_id = env('ID_TWITCH');
-        $state = $request->query('state');
+    {
+        $this->uri_login = env('LOGIN_TWITCH_URI'); 
+        $this->uri_redirect = env('APP_URL').':'.env('APP_PORT').env('REDIRECT_TWITCH_URI');
+        $this->client = env('ID_TWITCH');
 
+        $claims = '{"id_token":{"email":null,"email_verified":null},"userinfo":{"email":null,"email_verified":null,"preferred_username":null,"picture":null,"updated_at":null}}';
+        $state = $request->query('state');
         if(is_null($state)){
             $state = md5(time());
-            $redirect = sprintf(
-                '%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s&claims=%s',
-                $login_url,
-                $client_id,
-                $redirect_uri,
-                'channel:read:polls+openid+user:read:email',
-                $state,
-                $claims
-            );
-            return redirect($redirect)->send();
+            return redirect(mountUri($claims, $state, $this->uri_login, $this->client, $this->uri_redirect))->send();
         }
 
-        return $this->getToken($request->query('code'), $client_id, $redirect_uri);  
+        return $this->getToken($request->query('code'));
     }
 
     /**
+     * getting the token generated in auth
+     * @param string $code
+     * @return array
+     */
+    private function getToken(string $code): array
+    {
+        return Http::post(env('URI_TOKEN'), [
+            'client_id' => $this->client,
+            'client_secret' => env('SECRET_TWITCH'),
+            'code' => $code,
+            'grant_type' => 'authorization_code',
+            'redirect_uri' => $this->uri_redirect
+        ])->json();
+    }
+
+    /**
+     * get the user authenticated
      * @param string $access_token
      * @return array
      */
@@ -50,26 +62,7 @@ class TwitchService implements ContractProvider
     }
 
     /**
-     * @param string $code
-     * @param string $client_id
-     * @param string $redirect_uri
-     * @return array
-     */
-    private function getToken(string $code, string $client_id, string $redirect_uri): array
-    {
-        $token_base = 'https://id.twitch.tv/oauth2/token';
-        $client_scret = env('SECRET_TWITCH');
-
-        return Http::post($token_base, [
-            'client_id' => $client_id,
-            'client_secret' => $client_scret,
-            'code' => $code,
-            'grant_type' => 'authorization_code',
-            'redirect_uri' => $redirect_uri
-        ])->json();
-    }
-
-    /**
+     * defining header from application
      * @param string $access_token
      * @return array
      */

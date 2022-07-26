@@ -2,9 +2,9 @@
 
 namespace App\Http\Repository;
 
+use App\Models\User;
 use App\Http\Interfaces\ContractProvider;
 use App\Http\Services\TwitchService;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -14,7 +14,7 @@ class AuthRepository
     /**
      * @param Request $request
      * @param string $provider
-     * @return boolean
+     * @return bool
      */
     public function getOAuth(Request $request, string $provider): bool
     {
@@ -23,8 +23,7 @@ class AuthRepository
         $user  = $authProvider->getUser($token['access_token']);
         $account = $this->setAuthenticatedUser($user);
         Auth::login($account);
-
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -33,8 +32,7 @@ class AuthRepository
      */
     public function setAuthenticatedUser(array $user): User
     {
-        $current = User::whereSub($user['sub'])->first();
-        if(!$current)
+        if(!$current = User::whereSub($user['sub'])->first())
             $current = User::firstOrCreate([
                 'name' => $user['preferred_username'],
                 'email' => $user['email'],
@@ -42,8 +40,8 @@ class AuthRepository
                 'picture' => $user['picture'],
                 'type' => 'twitch',
                 'password' => md5(time())
-            ]);    
-        
+            ]);
+
         return $current;
     }
 

@@ -15,13 +15,12 @@ class AuthController extends Controller
    /**
     * @param Request $request
     * @param string $provider
-    * @return void
+    * 
     */
     public function auth(Request $request, string $provider)
     {   
-        $result = $this->repository->getOAuth($request, $provider);
-        if($result)
-            return redirect()->route('index');        
+        if($this->repository->getOAuth($request, $provider))
+            return redirect()->route('index');
     }
 
 }
