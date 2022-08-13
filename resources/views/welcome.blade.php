@@ -11,15 +11,17 @@
     <title>HoMM</title>
 </head>
 <body>
-    <section class="logins">
-        <a class="log_twitch" href="{{ Auth::check() ? '#' : route('login', ['provider' => 'twitch']) }}">
-            <img src="{{ Auth::check() ? auth()->user()->picture : asset('img/img.png') }}">
-            <p>{{ Auth::check() ? 'Welcome ' . auth()->user()->name : 'Log-in with Twitch' }}</p>    
-        </a>
-        @if(Auth::check())
-        <a href="{{ route('logout') }}" class="logout">X</a>
-        @endif
+    <section class="main">
+        <img class="svg-not" src="{{asset('img/notification.svg')}}" alt="">
+        <section class="logins">
+            <a class="log_twitch" href="{{ Auth::check() ? '#' : route('login', ['provider' => 'twitch']) }}">
+                <img src="{{ Auth::check() ? auth()->user()->picture : asset('img/img.png') }}">
+                <p>{{ Auth::check() ? 'Welcome ' . auth()->user()->name : 'Log-in with Twitch' }}</p>    
+            </a>
+            @if(Auth::check())
+            <a href="{{ route('logout') }}" class="logout">X</a>
+            @endif
+        </section>
     </section>
-
 </body>
 </html>

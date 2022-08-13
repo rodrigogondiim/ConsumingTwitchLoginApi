@@ -7,6 +7,8 @@ body {
   background: #101010;
 }
 
+
+
 .logins {
   width: 200px;
   position: absolute;
@@ -59,7 +61,24 @@ body {
 .logins .logout:hover{
   animation: vibrating 0.2s;
   animation-iteration-count: 3;
+  cursor: pointer;
 }
+
+.main .svg-not{
+  position: absolute;
+  top: 12px;
+  right: 16%;
+  cursor: pointer;
+}
+
+/* .body-chat{
+  width: 500px;
+  height: 600px;
+  margin: 0 auto;
+  background-color:#fff;
+  margin-top: 10px;
+  border-radius: 2px;
+} */
 
 @keyframes vibrating {
   0% {margin-left: 0;}
