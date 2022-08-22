@@ -56,7 +56,6 @@ class TwitchService implements ContractProvider
      */
     public function getUser(string $access_token): array
     {
-        dd($access_token);
         return Http::withHeaders($this->getHeader($access_token))
         ->get('https://id.twitch.tv/oauth2/userinfo')
         ->json();

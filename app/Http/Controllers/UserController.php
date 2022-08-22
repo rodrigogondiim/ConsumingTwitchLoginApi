@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\{IndexUserRequest, StoreFriendRequest};
 use App\Http\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -27,8 +26,8 @@ class UserController extends Controller
         return response()->json($this->service->store($request->user->id));
     }
 
-    public function myFriends(): JsonResponse
+    public function showFriends(): JsonResponse
     {
-        return response()->json($this->service->myFriends());
+        return response()->json($this->service->showFriends());
     }
 }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
+use App\Models\{User, Friend};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Http, Auth};
-use App\Models\{User, Friend};
+use App\Enum\FriendStatus;
+
 
 class UserService
 {
@@ -23,22 +25,21 @@ class UserService
         return User::getUsers()->get();
     }
 
-    public function store(int $friend_id)
+    public function store(int $friend_id): Friend
     {
         return Friend::create([
-            'user_id' => Auth::user()->id,
-            'friend_id' => $friend_id
+            'from_user_id' => Auth::user()->id,
+            'to_user_id' => $friend_id,
+            'status' => FriendStatus::PENDENT
         ]);
     }
 
-    public function myFriends(): Collection
+    public function showFriends(): Collection
     {
-        return Friend::select('id','user_id', 'friend_id')
+        return Friend::select('id','from_user_id', 'to_user_id')
         ->getFriends()
-        ->with([
-            'user:id,sub,name,email,picture',
-            'friend:id,sub,name,email,picture'
-        ])->get();
+        ->whereStatus('accepted')
+        ->get();
     }
 
     /**
