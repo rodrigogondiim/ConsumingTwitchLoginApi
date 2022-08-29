@@ -17,7 +17,7 @@ class HomeController extends Controller
         $this->getUser();
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         Auth::logout();
         return redirect()->route('index');

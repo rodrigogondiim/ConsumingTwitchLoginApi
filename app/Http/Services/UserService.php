@@ -42,6 +42,14 @@ class UserService
         ->get();
     }
 
+    public function showPedencyFriends(): Collection
+    {
+        return Friend::select('id','from_user_id', 'to_user_id')
+        ->getFriends()
+        ->whereStatus('pendent')
+        ->get();
+    }
+
     /**
      * @param string $search
      * @return Array

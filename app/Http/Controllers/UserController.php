@@ -30,4 +30,9 @@ class UserController extends Controller
     {
         return response()->json($this->service->showFriends());
     }
+
+    public function showPedencyFriends(): JsonResponse
+    {
+        return response()->json($this->service->showPedencyFriends());
+    }
 }
