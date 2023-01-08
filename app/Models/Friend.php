@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use App\Enum\FriendStatus;
 use Illuminate\Database\Eloquent\{Builder, Model};
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Friend extends Model
 {
@@ -15,32 +16,33 @@ class Friend extends Model
         'status'
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'from_user_id', 'id');
     }
 
-    public function friend()
+    public function friend(): BelongsTo
     {
         return $this->belongsTo(User::class, 'to_user_id', 'id');
     }
 
-    public function scopeFriendVerify(Builder $query, int $sub)
+    public function scopeFriendVerify(Builder $query, int $sub): bool
     {
         return $query->where(
-            fn($q) => $q->whereFromUserId(Auth::user()->id)
-            ->whereToUserId($sub)
+            fn($q) => $q->whereFromUserId(auth()->user()->id)
+                ->whereToUserId($sub)
+                ->whereStatus(FriendStatus::ACCEPTED)
         )->orWhere(
             fn($q) => $q->whereFromUserId($sub)
-            ->whereToUserId(Auth::user()->id)
-        )->doesntExist();
+                ->whereToUserId(auth()->user()->id)
+                ->whereStatus(FriendStatus::ACCEPTED)
+        )->exists();
     }
 
-    public function scopeGetFriends($query)
+    public function scopeGetFriends(Builder $query): Builder
     {
-        return $query->where(fn($q) => $q->whereFromUserId(Auth::user()->id))
-        ->orWhere(fn($q) => $q->whereToUserId(Auth::user()->id))
-        ->with(['user' => fn($q) => $q->where('id', '<>', Auth::user()->id)])
-        ->with(['friend' => fn($q) => $q->where('id', '<>', Auth::user()->id)]);
+        return $query->where(fn($q) => $q->whereFromUserId(auth()->user()->id))
+            ->orWhere(fn($q) => $q->whereToUserId(auth()->user()->id))
+            ->with(['friend' => fn($q) => $q->where('id', '<>', auth()->user()->id)]);
     }
 }

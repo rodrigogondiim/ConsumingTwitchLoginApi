@@ -15,7 +15,7 @@ class StoreFriendRequest extends FormRequest
      */
     public function authorize()
     {
-        return Friend::friendVerify($this->user->id) and Auth::user()->id != $this->user->id;
+        return !Friend::friendVerify($this->user->id) and Auth::user()->id !== $this->user->id;
     }
 
     /**
