@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Repository;
+namespace App\Http\Services;
 
 use App\Models\User;
 use App\Http\Interfaces\ContractProvider;
@@ -8,7 +8,7 @@ use App\Http\Services\TwitchService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-class AuthRepository
+class AuthService
 {
 
     /**
@@ -19,7 +19,7 @@ class AuthRepository
     public function getOAuth(Request $request, string $provider): bool
     {
         $authProvider = $this->getProvider($provider);
-        $token = $authProvider->auth($request);
+        $token = $authProvider->auth($request->query('state'), $request->query('code'));
         $user  = $authProvider->getUser($token['access_token']);
         $account = $this->setAuthenticatedUser($user);
         Auth::login($account);

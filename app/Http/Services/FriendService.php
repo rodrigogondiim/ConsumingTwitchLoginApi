@@ -9,8 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Http, Auth};
 use App\Enum\FriendStatus;
 
-
-class UserService
+class FriendService
 {
 
     /**
@@ -37,17 +36,28 @@ class UserService
     public function showFriends(): Collection
     {
         return Friend::select('id','from_user_id', 'to_user_id')
-        ->getFriends()
-        ->whereStatus('accepted')
-        ->get();
+            ->getFriends()
+            ->whereStatus('accepted')
+            ->get();
     }
 
     public function showPedencyFriends(): Collection
     {
         return Friend::select('id','from_user_id', 'to_user_id')
-        ->getFriends()
-        ->whereStatus('pendent')
-        ->get();
+            ->getFriends()
+            ->whereToUserId(auth()->user()->id)
+            ->whereStatus('pendent')
+            ->get();
+    }
+    
+    public function showAcceptFriends(Friend $friend)
+    {
+        return tap($friend)->update(['status' => FriendStatus::ACCEPTED]);
+    }
+
+    public function showRecuseFriends(Friend $friend)
+    {
+        return tap($friend)->update(['status' => FriendStatus::RECUSED]);
     }
 
     /**

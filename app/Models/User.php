@@ -45,11 +45,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function friends()
-    {
-        return $this->hasMany(Friend::class, 'friend_id', 'id');
-    }
-
     public function scopeGetUsers()
     {
         return User::where('id', '<>', Auth::user()->id);
