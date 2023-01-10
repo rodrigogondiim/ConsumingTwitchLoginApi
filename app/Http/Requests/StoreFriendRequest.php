@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Models\{Friend, User};
+use App\Models\Friend;
 
 class StoreFriendRequest extends FormRequest
 {

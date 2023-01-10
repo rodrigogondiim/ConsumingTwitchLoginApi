@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Models\{User, Friend};
+use App\Models\Friend;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Http, Auth};
 use App\Enum\FriendStatus;
@@ -12,41 +12,42 @@ use App\Enum\FriendStatus;
 class FriendService
 {
 
-    /**
-     * @param string|null $search
-     * @return Collection
-     */
-    public function index(?string $search = null): Collection
+    public function index(): Collection
     {
-        if($search)
-            return collect($this->findUser($search));
-
-        return User::getUsers()->get();
+        return Friend::select('id','from_user_id', 'to_user_id')
+            ->getFriends()
+            ->whereStatus(FriendStatus::ACCEPTED)
+            ->get();
     }
-
+    /**
+     *
+     * @param integer $friend_id
+     * @return Friend
+     */
     public function store(int $friend_id): Friend
     {
         return Friend::create([
-            'from_user_id' => Auth::user()->id,
+            'from_user_id' => auth()->user()->id,
             'to_user_id' => $friend_id,
             'status' => FriendStatus::PENDENT
         ]);
     }
 
-    public function showFriends(): Collection
+    public function show(int $id): Friend|null
     {
         return Friend::select('id','from_user_id', 'to_user_id')
+            ->whereId($id)
             ->getFriends()
-            ->whereStatus('accepted')
-            ->get();
+            ->whereStatus(FriendStatus::ACCEPTED)
+            ->first();
     }
 
-    public function showPedencyFriends(): Collection
+    public function showPendencyFriends(): Collection
     {
         return Friend::select('id','from_user_id', 'to_user_id')
             ->getFriends()
             ->whereToUserId(auth()->user()->id)
-            ->whereStatus('pendent')
+            ->whereStatus(FriendStatus::PENDENT)
             ->get();
     }
     
