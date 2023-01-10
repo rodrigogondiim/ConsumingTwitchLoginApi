@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Http;
 class TwitchService implements ContractProvider
 {
 
-    protected ?string $uri_login;
-    protected ?string $uri_redirect;
-    protected ?string $client;
+    private ?string $uri_login;
+    private ?string $uri_redirect;
+    private ?string $client;
 
    /**
     * @param string|null $state

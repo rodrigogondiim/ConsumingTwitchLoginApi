@@ -16,9 +16,9 @@ class FriendController extends Controller
     {   
     }
 
-    public function index(IndexUserRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $result = $this->service->index($request->search);
+        $result = $this->service->index();
         return response()->json($result);
     }
 
@@ -28,15 +28,15 @@ class FriendController extends Controller
         return response()->json($result);
     }
 
-    public function showFriends(): JsonResponse
+    public function show(Friend $friend): JsonResponse
     {
-        $result = $this->service->showFriends();
+        $result = $this->service->show($friend->id);
         return response()->json($result);
     }
 
     public function showPendencyFriends(): JsonResponse
     {
-        $result = $this->service->showPedencyFriends();
+        $result = $this->service->showPendencyFriends();
         return response()->json($result);
     }
 
