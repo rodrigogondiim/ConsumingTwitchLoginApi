@@ -27,7 +27,7 @@ class Authenticate
         $sctClient = $this->findAutheticity($token);
 
         if($sctClient->status() !== 200)
-            return throw new AccessDeniedHttpException(self::MESSAGE);
+            throw new AccessDeniedHttpException(self::MESSAGE);
         
         $userVersion = User::whereSub($sctClient->json('sub'))->first();
         $userVersion->bearer = $token;
@@ -45,7 +45,7 @@ class Authenticate
     {
         $bearer = $request->bearerToken();
         if(is_null($bearer) or empty($bearer))
-            return throw new AccessDeniedHttpException(self::MESSAGE);
+            throw new AccessDeniedHttpException(self::MESSAGE);
 
         return "Bearer {$bearer}" ;
     }

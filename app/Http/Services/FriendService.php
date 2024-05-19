@@ -1,21 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Services;
 
 use App\Models\Friend;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\{Http, Auth};
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\{Http, Auth, Event};
 use App\Enum\FriendStatus;
+use App\Events\RequestFriend;
 
 class FriendService
 {
 
     public function index(): Collection
     {
-        return Friend::select('id','from_user_id', 'to_user_id')
-            ->getFriends()
+        return Friend::getFriends()
             ->whereStatus(FriendStatus::ACCEPTED)
             ->get();
     }
@@ -26,11 +24,17 @@ class FriendService
      */
     public function store(int $friend_id): Friend
     {
-        return Friend::create([
+        $solicitation_friend = Friend::create([
             'from_user_id' => auth()->user()->id,
             'to_user_id' => $friend_id,
             'status' => FriendStatus::PENDENT
         ]);
+
+        $solicitation_friend->friend->update(['view_notification' => true]);
+
+        Event::dispatch(new RequestFriend($solicitation_friend->load('user')));
+        
+        return $solicitation_friend;
     }
 
     public function show(int $id): Friend|null
@@ -44,21 +48,17 @@ class FriendService
 
     public function showPendencyFriends(): Collection
     {
-        return Friend::select('id','from_user_id', 'to_user_id')
-            ->getFriends()
+        return Friend::select('id','from_user_id', 'created_at')
             ->whereToUserId(auth()->user()->id)
             ->whereStatus(FriendStatus::PENDENT)
+            ->with('user:id,name,picture,created_at')
+            ->orderBy('created_at', 'DESC')
             ->get();
     }
     
-    public function showAcceptFriends(Friend $friend)
+    public function friendship(Friend $friend, bool $accept): Friend
     {
-        return tap($friend)->update(['status' => FriendStatus::ACCEPTED]);
-    }
-
-    public function showRecuseFriends(Friend $friend)
-    {
-        return tap($friend)->update(['status' => FriendStatus::RECUSED]);
+        return tap($friend)->update(['status' => $accept ? FriendStatus::ACCEPTED : FriendStatus::RECUSED]);
     }
 
     /**

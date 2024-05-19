@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enum\FriendStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Friend;
 
-class StoreFriendRequest extends FormRequest
+class FriendshipRequest  extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class StoreFriendRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Friend::byMeSolicited($this->user->id)->doesntExist() and auth()->user()->id !== $this->user->id and Friend::itIsMyFriend($this->user->id)->doesntExist();
+        return $this->friend->whereStatus(FriendStatus::PENDENT)->exists();
     }
 
     /**
@@ -24,6 +24,8 @@ class StoreFriendRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [];
+        return [
+            'accept' => 'required|bool'
+        ];
     }
 }
