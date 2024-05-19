@@ -11,9 +11,11 @@
   },
   "devDependencies": {
     "axios": "^0.21",
+    "laravel-echo": "^1.15.3",
     "laravel-mix": "^6.0.6",
     "lodash": "^4.17.19",
-    "postcss": "^8.1.14"
+    "postcss": "^8.1.14",
+    "pusher-js": "^8.3.0"
   },
   "name": "homm",
   "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",

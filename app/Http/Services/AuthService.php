@@ -5,6 +5,8 @@ namespace App\Http\Services;
 use App\Models\User;
 use App\Http\Interfaces\ContractProvider;
 use App\Http\Services\TwitchService;
+use App\Jobs\SendMail;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -32,17 +34,34 @@ class AuthService
      */
     public function setAuthenticatedUser(array $user): User
     {
-        if(!$current = User::whereSub($user['sub'])->first())
-            $current = User::firstOrCreate([
+
+        if(!$current = User::whereSub($user['sub'])->first()){
+            $defaultPassword = rand(10000, 99999); 
+            $current = User::create([
                 'name' => $user['preferred_username'],
                 'email' => $user['email'],
                 'sub' => $user['sub'],
                 'picture' => $user['picture'],
                 'type' => 'twitch',
-                'password' => md5(time())
+                'password' => password_hash($defaultPassword, PASSWORD_BCRYPT)
             ]);
-
+            SendMail::dispatch($current->name, $defaultPassword);
+        }
         return $current;
+    }
+
+    /**
+     *
+     * @param Request $rqs
+     * @return boolean
+     */
+    public function login(Request $rqs): bool
+    {
+        if (!password_verify($rqs->password, $rqs->usr()->password))
+            throw new Exception('credentials don\'t valid!');
+
+        Auth::login($rqs->usr());
+        return Auth::check();
     }
 
     /**

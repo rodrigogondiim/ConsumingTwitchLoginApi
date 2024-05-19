@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
-class IndexUserRequest extends FormRequest
+class ViewNotificationUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,8 @@ class IndexUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'search' => 'sometimes|string|max:25|min:4'
+            'view' => 'required|boolean',
         ];
     }
+
 }

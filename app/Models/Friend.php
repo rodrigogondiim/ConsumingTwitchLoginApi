@@ -26,23 +26,42 @@ class Friend extends Model
         return $this->belongsTo(User::class, 'to_user_id', 'id');
     }
 
-    public function scopeFriendVerify(Builder $query, int $sub): bool
+    public function scopeItIsMyFriend(Builder $query, int $id): Builder
     {
         return $query->where(
             fn($q) => $q->whereFromUserId(auth()->user()->id)
-                ->whereToUserId($sub)
+                ->whereToUserId($id)
                 ->whereStatus(FriendStatus::ACCEPTED)
         )->orWhere(
-            fn($q) => $q->whereFromUserId($sub)
+            fn($q) => $q->whereFromUserId($id)
                 ->whereToUserId(auth()->user()->id)
                 ->whereStatus(FriendStatus::ACCEPTED)
-        )->exists();
+        );
+    }
+
+    public function scopeByMeSolicited(Builder $query, int $id): Builder
+    {
+        return $query->where(
+            fn($q) => $q->whereFromUserId(auth()->user()->id)
+                ->whereToUserId($id)
+                ->whereNot(fn($q) => $q->whereStatus(FriendStatus::ACCEPTED))
+                ->whereStatus(FriendStatus::PENDENT)
+        );
+    }
+
+    public function scopeOuterSolicited(Builder $query, int $sub): Builder
+    {
+        return $query->where(
+            fn($q) => $q->whereFromUserId($sub)
+                ->whereToUserId(auth()->user()->id)
+                ->whereStatus(FriendStatus::PENDENT)
+        );
     }
 
     public function scopeGetFriends(Builder $query): Builder
     {
         return $query->where(fn($q) => $q->whereFromUserId(auth()->user()->id))
             ->orWhere(fn($q) => $q->whereToUserId(auth()->user()->id))
-            ->with(['friend' => fn($q) => $q->where('id', '<>', auth()->user()->id)]);
+            ->with('friend');
     }
 }
