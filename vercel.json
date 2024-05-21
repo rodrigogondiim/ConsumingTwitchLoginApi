@@ -6,14 +6,6 @@
     },
     "routes": [
         {
-            "src": "/(favicon\\.ico|robots\\.txt)",
-            "dest": "/public/$1"
-        },
-        {
-            "src": "/build/(.*)",
-            "dest": "/public/build/$1"
-        },
-        {
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
@@ -22,7 +14,7 @@
         "APP_NAME": "api.treckstar.net",
         "APP_ENV": "production",
         "APP_DEBUG": "false",
-        "APP_URL": "https://api.treckstar.net",
+        "APP_URL": "https://consuming-twitch-login-api.vercel.app/",
         "VERCEL_DEMO_MODE": "true",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
@@ -35,5 +27,6 @@
         "VIEW_COMPILED_PATH": "/tmp/views",
         "SSR_TEMP_PATH": "/tmp/ssr",
         "NODE_PATH": "node"
-    }
+    },
+    "outputDirectory": "public"
 }
