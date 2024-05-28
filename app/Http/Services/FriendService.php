@@ -6,7 +6,7 @@ use App\Models\Friend;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\{Http, Auth, Event};
 use App\Enum\FriendStatus;
-use App\Events\RequestFriend;
+use App\Events\{Friendship, StatusFriendship};
 
 class FriendService
 {
@@ -32,7 +32,7 @@ class FriendService
 
         $solicitation_friend->friend->update(['view_notification' => true]);
 
-        Event::dispatch(new RequestFriend($solicitation_friend->load('user')));
+        Event::dispatch(new Friendship($solicitation_friend->load('user')));
         
         return $solicitation_friend;
     }
@@ -58,7 +58,10 @@ class FriendService
     
     public function friendship(Friend $friend, bool $accept): Friend
     {
-        return tap($friend)->update(['status' => $accept ? FriendStatus::ACCEPTED : FriendStatus::RECUSED]);
+        $accept = $accept ? FriendStatus::ACCEPTED : FriendStatus::RECUSED;
+        $friend = tap($friend)->update(['status' => $accept]);
+        Event::dispatch(new StatusFriendship($friend->load('user'), $accept));
+        return $friend;
     }
 
     /**

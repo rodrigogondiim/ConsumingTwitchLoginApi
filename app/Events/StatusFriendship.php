@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Enum\FriendStatus;
 use App\Models\Friend;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -11,7 +12,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RequestFriend implements ShouldBroadcast
+class StatusFriendship implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -20,9 +21,10 @@ class RequestFriend implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(private Friend $friend)
-    {
-        
+    public function __construct(
+        private Friend $friend,
+        private FriendStatus $status
+    ) {
     }
 
     /**
@@ -32,16 +34,16 @@ class RequestFriend implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel("request_friend.{$this->friend->to_user_id}");
+        return new PrivateChannel("response_friendship.{$this->friend->from_user_id}");
     }
 
     public function broadcastAs()
     {
-        return 'RequestFriend';
+        return 'ResponseFriendship';
     }
 
     public function broadcastWith()
     {
-        return ['notification' => $this->friend];
+        return ['statusFriendship' => $this->friend];
     }
 }

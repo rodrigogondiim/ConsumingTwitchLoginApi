@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FriendshipRequest;
-use App\Http\Requests\StoreFriendRequest;
+use App\Http\Requests\{FriendshipRequest, StoreFriendRequest};
 use App\Http\Resources\IndexFriendResource;
 use App\Http\Services\FriendService;
 use App\Models\Friend;
@@ -45,7 +44,7 @@ class FriendController extends Controller
 
     public function friendship(FriendshipRequest $request, Friend $friend): JsonResponse
     {
-        $result = $this->service->friendship($friend, ...$request->validate());
+        $result = $this->service->friendship($friend, ...$request->validated());
         return response()->json($result);
     }
 }

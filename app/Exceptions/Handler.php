@@ -85,7 +85,6 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof Throwable) {
-            dd($e);
             return response()->json([
                 'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => 'Internal Server Error'
